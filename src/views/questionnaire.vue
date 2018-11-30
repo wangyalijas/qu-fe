@@ -10,14 +10,14 @@
       <div class="bg-title">0/5</div>
     </div>
     <div class="questionnaire-content">
-      <template v-for="(list, index1) in lists">
+      <template v-for="(item, index1) in lists">
         <div class="item" :key="index1">
-          <div class="title"><span class="check lint-height">[{{list.type=='radio' ? '单选' : '多选'}}]</span>{{list.title}}</div>
+          <div class="title"><span class="check lint-height">[{{item.type=='radio' ? '单选' : '多选'}}]</span>{{item.title}}</div>
           <ul>
-            <template v-for="(selection, index2) in list.selections">
+            <template v-for="(selection, index2) in item.selections">
               <li :key="index2">
                 <div class="check-button">
-                  <i class="iconfont icon-weigouxuan"></i>
+                  <i class="iconfont icon-weigouxuan" :class="{'icon-gouxuan_': isSelected(item, selection.id)}"></i>
                 </div>
                 <div class="check-label" @click="handleClick(selection.id, index1)">{{selection.label}}</div>
               </li>
@@ -48,22 +48,22 @@
             selections: [
               {
                 label: 'A：1993',
-                id: 1
+                id: 1,
               },
               {
                 label: 'B：1994',
-                id: 2
+                id: 2,
               },
               {
                 label: 'C：2000',
-                id: 3
+                id: 3,
               },
               {
                 label: 'D：2001',
-                id: 4
+                id: 4,
               }
             ],
-            result: ''
+            result: '',
           },
           {
             index: 1,
@@ -72,19 +72,19 @@
             selections: [
               {
                 label: 'A：1993',
-                id: 1
+                id: 1,
               },
               {
                 label: 'B：1994',
-                id: 2
+                id: 2,
               },
               {
                 label: 'C：2000',
-                id: 3
+                id: 3,
               },
               {
                 label: 'D：2001',
-                id: 4
+                id: 4,
               }
             ]
           }
@@ -97,9 +97,38 @@
     },
     methods: {
       handleClick(id, index) {
-        this.$set(this.lists[index], 'result', id);
+        this.setValueToItem(this.lists[index], id);
+        console.log(this.lists[index].result);
+      },
+      setValueToItem(item, value) {
+        let result;
+
+        switch (item.type) {
+          case 'check-box' :
+            result = item.result || [];
+            if (result.includes(value)) {
+              result.splice(result.indexOf(value), 1);
+            } else {
+              result.push(value);
+            }
+            break;
+          default: 
+            result = value;
+            break;
+        }
+
+        this.$set(item, 'result', result);
+      },
+      isSelected(item, value) {
+        console.log(item, value);
+        switch (item.type) {
+          case 'check-box':
+            return (item.result || []).includes(value);
+          default: 
+            return item.result === value;
+        }
       }
-    }
+    },
   }
 </script>
 
